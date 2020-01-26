@@ -7,9 +7,10 @@ size_t terminal::column = 0;
 size_t terminal::row = 0;
 uint16_t* const terminal::buffer = (uint16_t*) 0xB8000;
 
-
 void terminal::putchar(char c, uint8_t color, size_t x, size_t y) {
-    const size_t offset = vga::MAX_WIDTH * y + x;
+    terminal::column = x;
+    terminal::row = y;
+    const size_t offset = vga::MAX_WIDTH * terminal::row + terminal::column;
     terminal::buffer[offset] = vga::get_char_entry(c, color);
     ++terminal::column;
     if (terminal::column > vga::MAX_WIDTH) {
@@ -24,20 +25,26 @@ void terminal::clear() {
     }
 }
 
-void terminal::newline() {
-    ++terminal::row;
-    terminal::column = 0;
+void terminal::newline(size_t& column, size_t& row) {
+    ++row;
+    column = 0;
 }
 
 void terminal::putstr(const char str[], uint8_t color, size_t x, size_t y) {
     auto len = strlen(str);
     for (size_t i = 0; i < len; ++i) {
-        terminal::putchar(str[i], color, x, y);
-        ++x;
-        if (x > vga::MAX_WIDTH) {
-            terminal::newline();
+        if (str[i] == '\n') {
+            terminal::newline(x, y);
         }
-    }   
+        else {
+            terminal::putchar(str[i], color, x, y);
+            ++x;
+            if (x > vga::MAX_WIDTH)
+                terminal::newline(x, y);
+        }
+    }
+    terminal::column = x;
+    terminal::row = y;
 }
 
 void terminal::scroll(int lines) {
