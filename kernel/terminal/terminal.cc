@@ -39,3 +39,24 @@ void terminal::putstr(const char str[], uint8_t color, size_t x, size_t y) {
         }
     }   
 }
+
+void terminal::scroll(int lines) {
+    if (lines > 0) {
+        for (size_t offset = 0; offset < vga::MAX_WIDTH * (vga::MAX_HEIGHT - 2); ++offset) {
+            terminal::buffer[offset] = terminal::buffer[offset + vga::MAX_WIDTH];
+        }
+        // clear last line
+        for (size_t offset = vga::MAX_WIDTH * (vga::MAX_HEIGHT - 1); offset < vga::MAX_WIDTH * vga::MAX_HEIGHT; ++offset) {
+            terminal::buffer[offset] = vga::get_char_entry(' ', terminal::color);
+        }
+    }
+    else if (lines < 0) {
+        for (size_t offset = vga::MAX_HEIGHT * vga::MAX_WIDTH; offset >= vga::MAX_WIDTH; --offset) {
+            terminal::buffer[offset] = terminal::buffer[offset - vga::MAX_WIDTH];
+        }
+        // clear  first line
+        for (size_t offset = 0; offset < vga::MAX_WIDTH; ++offset) {
+            terminal::buffer[offset] = vga::get_char_entry(' ', terminal::color);
+        }
+    }
+}

@@ -12,6 +12,7 @@ namespace terminal {
     void newline();
     void putchar(char c, uint8_t color = terminal::color, size_t x = terminal::column, size_t y = terminal::row);
     void putstr(const char str[], uint8_t color = terminal::color, size_t x = terminal::column, size_t y = terminal::row);
+    void scroll(int lines = 1);
 }
 
 #endif
