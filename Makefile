@@ -3,7 +3,7 @@ CXX := i686-elf-g++
 ASM := i686-elf-as
 
 CFLAGS = -ffreestanding -O2 -nostdlib -Wall -Wextra
-CXXFLAGS = -ffreestanding -O2 -nostdlib -fno-exceptions -fno-rtti -fpermissive -std=c++14
+CXXFLAGS = -ffreestanding -O2 -nostdlib -fno-exceptions -fno-rtti -Wall -Wextra -std=c++14
 
 out/luszos.bin: out/kernel.o out/boot.o out/strlen.o out/terminal.o out/vga.o
 	$(CXX) -T linker.ld -o $@ $(CXXFLAGS) $^ -lgcc
