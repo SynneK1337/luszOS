@@ -2,19 +2,26 @@ CC := i686-elf-gcc
 CXX := i686-elf-g++
 ASM := i686-elf-as
 
-SRC := $(wildcard *.cc)
-OBJ := $(patsubst %.cc, %.o, $(SRC))
+CFLAGS = -ffreestanding -O2 -nostdlib -Wall -Wextra
+CXXFLAGS = -ffreestanding -O2 -nostdlib -fno-exceptions -fno-rtti -fpermissive -std=c++14
 
-CXXFLAGS = -ffreestanding -O2 -nostdlib -Wall -Wextra
+out/luszos.bin: out/kernel.o out/boot.o out/strlen.o out/terminal.o out/vga.o
+	$(CXX) -T linker.ld -o $@ $(CXXFLAGS) $^ -lgcc
 
-link: $(OBJ)
-	$(CXX) -T linker.ld -o out/luszos.bin $(CXXFLAGS) out/boot.o out/kernel.o -lgcc
+out/kernel.o: kernel/kernel.cc
+	$(CXX) -c $^ $(CXXFLAGS) -o $@
 
-%.o: %.cc
-	$(CXX) $< $(CXXFLAGS) -o $@
+out/terminal.o: kernel/terminal/terminal.cc
+	$(CXX) -c $< $(CXXFLAGS) -o $@
 
-boot: arch/i686/boot.asm
-	$(ASM) arch/i686/boot.asm -o out/boot.o
+out/vga.o: kernel/vga/vga.cc
+	$(CXX) -c $< $(CXXFLAGS) -o $@
+
+out/strlen.o: kernel/misc/strlen.cc
+	$(CXX) -c $< $(CXXFLAGS) -o $@
+
+out/boot.o: kernel/arch/i686/boot.asm
+	$(ASM) $< -o $@
 
 clean:
 	rm out/*

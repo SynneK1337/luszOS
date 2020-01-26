@@ -1,8 +1,10 @@
-#include <stdint.h>
+#include "vga/vga.hxx"
+#include "terminal/terminal.hxx"
 
-void kernel_main(void) {
-    uint16_t* framebuffer = (uint16_t*) 0xB8000;
-    for (short i = 0; i < 4; ++i) {
-        framebuffer[i] = 'A' | (15 | 0 << 4) << 8;
-    }
+extern "C"
+void kernel_main() {
+    terminal::clear();
+    terminal::color = vga::get_color(vga::LIGHT_GREY, vga::BLACK);
+    
+    terminal::putstr("luszOS booted up.");
 }
